@@ -16,10 +16,6 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!import.meta.env.VITE_GAS_URL) {
-      setError('系統設定錯誤：缺少 VITE_GAS_URL，請檢查環境變數。');
-      return;
-    }
     setError('');
     setIsLoading(true);
     

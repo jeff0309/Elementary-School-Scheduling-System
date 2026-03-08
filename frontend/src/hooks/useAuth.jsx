@@ -21,6 +21,15 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (username, password) => {
+    // 若無 GAS URL（未設定 GitHub Secret），進入後端未連接的測試模式
+    if (!import.meta.env.VITE_GAS_URL) {
+      console.warn('[WARN] VITE_GAS_URL is not set. Entering offline demo mode.');
+      const userInfo = { username, demoMode: true };
+      setUser(userInfo);
+      localStorage.setItem('schedule_user', JSON.stringify(userInfo));
+      return { success: true };
+    }
+
     try {
       console.log(`[INFO] Attempting to login user: ${username}`);
       
@@ -31,7 +40,6 @@ export const AuthProvider = ({ children }) => {
           username,
           password
         }),
-        // 跨域請求設定
         headers: {
           'Content-Type': 'text/plain;charset=utf-8',
         }
@@ -51,7 +59,7 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error(`[ERROR] Exception during login: ${error.message}`);
-      return { success: false, message: "Network error or invalid GAS URL" };
+      return { success: false, message: '網路錯誤或 GAS URL 無效，請確認後端設定。' };
     }
   };
 
